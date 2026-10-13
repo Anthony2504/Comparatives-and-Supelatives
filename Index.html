@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Comparatives and Superlatives — Interactive Practice</title>
+<style>
+  :root{
+    --bg:#f2f7ff; --card:#ffffff; --ink:#1d2b3a; --muted:#4f6275;
+    --brand:#4b3fd6; --brand-2:#7a6cf0; --ok-bg:#e3f8ea; --ok-ink:#11642c;
+    --bad-bg:#fde8e8; --bad-ink:#a51d1d; --miss-bg:#fff4d6; --miss-ink:#7a5300;
+    --line:#d7e1ee; --focus:#ff9f1c;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0; font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+    font-size:1.12rem; line-height:1.6; color:var(--ink);
+    background:linear-gradient(160deg,#eef3ff 0%,#fdf4ff 100%); min-height:100vh;
+  }
+  .wrap{max-width:900px;margin:0 auto;padding:20px 16px 60px}
+  header.hero{
+    background:linear-gradient(135deg,var(--brand),var(--brand-2));
+    color:#fff; border-radius:24px; padding:28px 24px; box-shadow:0 10px 30px rgba(75,63,214,.25);
+  }
+  header.hero h1{margin:6px 0 8px;font-size:clamp(1.6rem,4vw,2.3rem);line-height:1.2}
+  .badge{display:inline-block;background:rgba(255,255,255,.22);border-radius:999px;padding:4px 14px;font-weight:600;font-size:.95rem}
+  .card{
+    background:var(--card); border-radius:22px; padding:24px; margin-top:22px;
+    box-shadow:0 6px 20px rgba(29,43,58,.08); border:1px solid #e7edf7;
+  }
+  h2{font-size:1.5rem;margin:0 0 8px;color:var(--brand)}
+  h3{font-size:1.2rem;margin:18px 0 6px}
+  .instr{color:var(--muted);margin:0 0 16px}
+  .ref-grid{display:grid;gap:14px;grid-template-columns:1fr}
+  @media(min-width:700px){.ref-grid{grid-template-columns:1fr 1fr}}
+  .formula{background:#f6f3ff;border-left:6px solid var(--brand);border-radius:14px;padding:14px 16px}
+  .formula strong{color:var(--brand)}
+  .example{font-style:italic;margin-top:6px}
+  .tip{background:#fff8e6;border-radius:14px;padding:14px 16px;border:1px solid #ffe2a3}
+  ul.rules{padding-left:20px;margin:6px 0}
+  ul.rules li{margin:6px 0}
+  .toc{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+  .toc a{background:#eef0ff;color:var(--brand);text-decoration:none;padding:8px 14px;border-radius:999px;font-weight:600}
+  .toc a:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+
+  .q{border:2px solid var(--line);border-radius:16px;padding:16px;margin:14px 0;transition:background .2s,border-color .2s}
+  .q.right{background:var(--ok-bg);border-color:#7bd39a}
+  .q.wrong{background:var(--bad-bg);border-color:#f0a3a3}
+  .qtext{margin:0 0 10px;font-size:1.15rem}
+  .num{font-weight:800;color:var(--brand);margin-right:4px}
+  .hint{color:var(--muted);font-weight:600;white-space:nowrap}
+  fieldset{border:0;margin:0;padding:0}
+  legend.sr{position:absolute;left:-9999px}
+  .opts{display:grid;gap:10px;grid-template-columns:1fr}
+  @media(min-width:640px){.opts{grid-template-columns:repeat(3,1fr)}}
+  .opt{position:relative}
+  .opt input{position:absolute;opacity:0;width:1px;height:1px}
+  .opt label{
+    display:block;padding:14px 12px;border:2px solid var(--line);border-radius:14px;
+    background:#fff;cursor:pointer;text-align:center;font-weight:600;min-height:52px;
+    display:flex;align-items:center;justify-content:center
+  }
+  .opt label:hover{border-color:var(--brand-2)}
+  .opt input:checked + label{background:#ece9ff;border-color:var(--brand);color:var(--brand)}
+  .opt input:focus-visible + label{outline:3px solid var(--focus);outline-offset:2px}
+
+  input[type=text], select, textarea{
+    font:inherit; font-size:1.1rem; padding:10px 12px; border:2px solid #b9c7da; border-radius:12px;
+    background:#fff; color:var(--ink); min-height:48px; max-width:100%
+  }
+  input[type=text]{width:12em}
+  input.wide{width:100%}
+  select{min-width:9em}
+  input[type=text]:focus-visible, select:focus-visible, textarea:focus-visible, input[type=checkbox]:focus-visible{
+    outline:3px solid var(--focus); outline-offset:2px; border-color:var(--brand)
+  }
+  .check{display:flex;gap:12px;align-items:flex-start;margin-top:18px;font-size:1.1rem;cursor:pointer}
+  .check input{width:24px;height:24px;margin-top:2px;flex:0 0 auto}
+
+  .fb{margin-top:10px;padding:0;border-radius:12px;font-weight:600}
+  .fb:not(:empty){padding:10px 12px}
+  .fb.ok{background:var(--ok-bg);color:var(--ok-ink)}
+  .fb.bad{background:var(--bad-bg);color:var(--bad-ink)}
+  .fb.miss{background:var(--miss-bg);color:var(--miss-ink)}
+
+  .actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:18px}
+  .btn{
+    font:inherit; font-weight:700; font-size:1.05rem; border:0; border-radius:14px;
+    padding:12px 22px; min-height:50px; cursor:pointer; transition:transform .1s, box-shadow .2s
+  }
+  .btn:hover{transform:translateY(-1px)}
+  .btn:active{transform:translateY(1px)}
+  .btn:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
+  .btn.primary{background:var(--brand);color:#fff;box-shadow:0 4px 12px rgba(75,63,214,.3)}
+  .btn.ghost{background:#fff;color:var(--brand);border:2px solid var(--brand)}
+  .btn.warn{background:#fff;color:#8a4b00;border:2px solid #f0a33a}
+  .score{font-size:1.15rem;font-weight:700;margin:14px 0 0;color:var(--brand)}
+  .score:empty{display:none}
+
+  .vis{margin-bottom:10px}
+  .pair{display:flex;align-items:center;justify-content:center;gap:18px;font-size:3.2rem;padding:8px 0}
+  .pair .vs{font-size:1.1rem;font-weight:800;color:var(--muted)}
+  .bars{display:grid;gap:8px}
+  .bar{
+    background:linear-gradient(90deg,#ffd166,#ffb703);border-radius:12px;padding:10px 14px;font-weight:700;
+    color:#3d2a00;white-space:nowrap;overflow:hidden;
+  }
+  .bar.blue{background:linear-gradient(90deg,#9ad8ff,#4fb0ff);color:#00304f}
+  .bar.green{background:linear-gradient(90deg,#b8f2c2,#5fd38a);color:#0c4620}
+  .caption{font-size:.95rem;color:var(--muted);margin-top:4px}
+
+  .speak{background:#eaf8ff;border:2px solid #bfe6ff;border-radius:16px;padding:14px 16px;margin-top:16px}
+  .model{background:#f6fff8;border:2px dashed #7bd39a;border-radius:14px;padding:14px 18px;margin-top:16px}
+  .model[hidden]{display:none}
+  .model ol{margin:6px 0 0;padding-left:22px}
+
+  .results{border:3px solid var(--brand);background:linear-gradient(180deg,#fff,#f6f3ff)}
+  .big{font-size:2.4rem;font-weight:800;color:var(--brand);margin:6px 0}
+  .msg{font-size:1.2rem;font-weight:700;padding:14px 16px;border-radius:14px;background:#ece9ff;color:var(--brand)}
+  .results ul{padding-left:20px}
+  .results li{margin:4px 0}
+  .footer-actions{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:24px}
+  .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  @media (max-width:520px){
+    .card{padding:18px}
+    .pair{font-size:2.6rem;gap:10px}
+    .btn{width:100%}
+    .actions .btn{flex:1 1 100%}
+  }
+  @media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <span class="badge">English · Level A1 · Beginner</span>
+    <h1>Comparatives and Superlatives — Interactive Practice</h1>
+    <p style="margin:0">Learn how to compare animals and objects. Answer the questions, check your answers, and see your score at the end.</p>
+  </header>
+
+  <section class="card" aria-labelledby="how-h">
+    <h2 id="how-h">How to use this worksheet</h2>
+    <ul class="rules">
+      <li>Read the grammar box first.</li>
+      <li>Answer each question. Then press <strong>Check answers</strong> in each part.</li>
+      <li>Green means correct. Red means try again. Read the tip under each red answer.</li>
+      <li>Press <strong>Try again</strong> to clear one part. Press <strong>Reset worksheet</strong> to start over.</li>
+      <li>You can use the <strong>Tab</strong> key to move between answers. Press <strong>Enter</strong> in a text box to check that part.</li>
+    </ul>
+    <nav class="toc" aria-label="Exercises">
+      <a href="#ex1">Ex 1</a><a href="#ex2">Ex 2</a><a href="#ex3">Ex 3</a><a href="#ex4">Ex 4</a><a href="#ex5">Ex 5</a><a href="#ex6">Ex 6</a><a href="#results">My results</a>
+    </nav>
+  </section>
+
+  <section class="card" aria-labelledby="ref-h">
+    <h2 id="ref-h">Grammar reference</h2>
+    <div class="ref-grid">
+      <div class="formula">
+        <h3 style="margin-top:0">Comparative (comparing 2 things)</h3>
+        <p><strong>Subject + verb + adjective-er + than + comparison</strong></p>
+        <p class="example">A cheetah is <u>faster</u> <u>than</u> a horse.</p>
+      </div>
+      <div class="formula">
+        <h3 style="margin-top:0">Superlative (the most / the -est)</h3>
+        <p><strong>Subject + verb + the + adjective-est</strong></p>
+        <p class="example">The cheetah is <u>the fastest</u> animal.</p>
+      </div>
+    </div>
+    <h3>Spelling rules</h3>
+    <ul class="rules">
+      <li><strong>Most short adjectives:</strong> add <em>-er</em> or <em>-est</em>. Example: fast → faster → the fastest.</li>
+      <li><strong>Consonant + vowel + consonant:</strong> double the last letter. Example: big → bigger → the biggest.</li>
+      <li><strong>Ends in -y:</strong> change y to i. Example: heavy → heavier → the heaviest.</li>
+    </ul>
+    <div class="tip">
+      <strong>Remember:</strong> Use <strong>than</strong> with comparatives (faster <em>than</em>). Use <strong>the</strong> with superlatives (<em>the</em> fastest).
+    </div>
+    <h3>Word list</h3>
+    <p>fast → faster → the fastest · small → smaller → the smallest · slow → slower → the slowest · short → shorter → the shortest · long → longer → the longest · big → bigger → the biggest · heavy → heavier → the heaviest</p>
+  </section>
+
+  <!-- EXERCISE 1 -->
+  <section class="card" id="ex1" aria-labelledby="h-ex1">
+    <h2 id="h-ex1">Exercise 1 — Choose the correct answer</h2>
+    <p class="instr">Read each sentence. Choose the correct word or phrase.</p>
+    <div id="ex1-items"></div>
+    <div class="actions">
+      <button class="btn primary" data-check="ex1">Check answers</button>
+      <button class="btn ghost" data-try="ex1">Try again</button>
+    </div>
+    <p class="score" id="score-ex1" aria-live="polite"></p>
+  </section>
+
+  <!-- EXERCISE 2 -->
+  <section class="card" id="ex2" aria-labelledby="h-ex2">
+    <h2 id="h-ex2">Exercise 2 — Complete the sentences</h2>
+    <p class="instr">Type the correct form of the word in brackets. Example: fast → faster.</p>
+    <div id="ex2-items"></div>
+    <div class="actions">
+      <button class="btn primary" data-check="ex2">Check answers</button>
+      <button class="btn ghost" data-try="ex2">Try again</button>
+    </div>
+    <p class="score" id="score-ex2" aria-live="polite"></p>
+  </section>
+
+  <!-- EXERCISE 3 -->
+  <section class="card" id="ex3" aria-labelledby="h-ex3">
+    <h2 id="h-ex3">Exercise 3 — Comparative or superlative?</h2>
+    <p class="instr">Choose the right form from the list. Look at the words "than" and "the" to help you.</p>
+    <div id="ex3-items"></div>
+    <div class="actions">
+      <button class="btn primary" data-check="ex3">Check answers</button>
+      <button class="btn ghost" data-try="ex3">Try again</button>
+    </div>
+    <p class="score" id="score-ex3" aria-live="polite"></p>
+  </section>
+
+  <!-- EXERCISE 4 -->
+  <section class="card" id="ex4" aria-labelledby="h-ex4">
+    <h2 id="h-ex4">Exercise 4 — Find and correct the mistake</h2>
+    <p class="instr">Each sentence has a mistake. Write the correct sentence in the box.</p>
+    <div id="ex4-items"></div>
+    <div class="actions">
+      <button class="btn primary" data-check="ex4">Check answers</button>
+      <button class="btn warn" data-model="ex4">Show / hide model answers</button>
+      <button class="btn ghost" data-try="ex4">Try again</button>
+    </div>
+    <p class="score" id="score-ex4" aria-live="polite"></p>
+    <div class="model" id="ex4-model" hidden>
+      <strong>Model answers (compare with your own):</strong>
+      <ol id="ex4-model-list"></ol>
+    </div>
+  </section>
+
+  <!-- EXERCISE 5 -->
+  <section class="card" id="ex5" aria-labelledby="h-ex5">
+    <h2 id="h-ex5">Exercise 5 — Compare the pictures</h2>
+    <p class="instr">Look at each picture. Complete the sentence. Use the word in brackets in its correct form.</p>
+    <div id="ex5-items"></div>
+    <div class="speak">
+      <strong>Speaking:</strong> Read your sentences aloud. Then compare two other objects with a partner.
+    </div>
+    <label class="check">
+      <input type="checkbox" id="self-check">
+      <span>I can compare two objects using -er + than.</span>
+    </label>
+    <div class="actions">
+      <button class="btn primary" data-check="ex5">Check answers</button>
+      <button class="btn ghost" data-try="ex5">Try again</button>
+    </div>
+    <p class="score" id="score-ex5" aria-live="polite"></p>
+  </section>
+
+  <!-- EXERCISE 6 -->
+  <section class="card" id="ex6" aria-labelledby="h-ex6">
+    <h2 id="h-ex6">Exercise 6 — Final challenge</h2>
+    <p class="instr">Decide which form is needed. Think about the context: two things (comparative) or a group (superlative).</p>
+    <div id="ex6-items"></div>
+    <div class="actions">
+      <button class="btn primary" data-check="ex6">Check answers</button>
+      <button class="btn ghost" data-try="ex6">Try again</button>
+    </div>
+    <p class="score" id="score-ex6" aria-live="polite"></p>
+  </section>
+
+  <!-- RESULTS -->
+  <section class="card results" id="results" aria-labelledby="h-res">
+    <h2 id="h-res">My final results</h2>
+    <div class="big" id="final-score" aria-live="polite">0 / 37 (0%)</div>
+    <ul id="final-rows"></ul>
+    <p class="msg" id="final-msg" aria-live="polite">Check the answers in each part to see your results.</p>
+    <div class="footer-actions">
+      <button class="btn primary" id="reset-all">Reset worksheet</button>
+    </div>
+  </section>
+
+</div>
+
+<script>
+(function(){
+  const $ = id => document.getElementById(id);
+  const norm = s => s.trim().replace(/\s+/g,' ').replace(/[.!?]+$/,'').toLowerCase();
+
+  /* ---------- DATA ---------- */
+  const EX1 = [
+    {p:"A cheetah is _____ than a horse.", o:["fast","faster","the fastest"], a:1,
+     e:"We compare two animals, so we use the comparative with -er: faster."},
+    {p:"An elephant is _____ than a dog.", o:["bigger","biggest","big"], a:0,
+     e:"Big has a double g before -er: big → bigger. We compare two things, so not 'biggest'."},
+    {p:"A mouse is _____ than a cat.", o:["smaller","the smallest","small"], a:0,
+     e:"Small + -er = smaller. We compare a mouse and a cat."},
+    {p:"A turtle is _____ than a rabbit.", o:["slow","slower","the slowest"], a:1,
+     e:"We use slower with than: slow → slower."},
+    {p:"This pencil is _____ than that pencil.", o:["shorter","shortest","the shortest"], a:0,
+     e:"Two pencils are compared, so use shorter. 'The shortest' is for a group of three or more."},
+    {p:"An elephant is _____ than a horse.", o:["heavy","heavier","the heaviest"], a:1,
+     e:"Heavy ends in -y. Change y to i and add -er: heavier."},
+    {p:"This is _____ road in the city.", o:["longer","the longest","long"], a:1,
+     e:"'In the city' means one road out of many, so use the superlative: the longest."}
+  ];
+
+  const EX2 = [
+    {p:"A plane is [[]] than a car.", hint:"(fast)", a:"faster", e:"fast + -er = faster."},
+    {p:"An elephant is [[]] than a lion.", hint:"(heavy)", a:"heavier", e:"Heavy ends in -y, so y changes to i: heavier."},
+    {p:"My bag is [[]] than your bag.", hint:"(big)", a:"bigger", e:"Big has a double g: bigger."},
+    {p:"A mouse is [[]] than a rabbit.", hint:"(small)", a:"smaller", e:"Small + -er = smaller."},
+    {p:"A snail is [[]] than a horse.", hint:"(slow)", a:"slower", e:"Slow + -er = slower."},
+    {p:"This ruler is [[]] than that ruler.", hint:"(long)", a:"longer", e:"Long + -er = longer."},
+    {p:"My pencil is [[]] than your pencil.", hint:"(short)", a:"shorter", e:"Short + -er = shorter."}
+  ];
+
+  const EX3 = [
+    {p:"A giraffe is [[]] than a dog.", hint:"(big)", o:["bigger","the biggest","big"], a:0,
+     e:"We compare two animals and use 'than', so we need bigger."},
+    {p:"This is [[]] animal in the group.", hint:"(small)", o:["smaller","the smallest","small"], a:1,
+     e:"'In the group' means many animals, so use the superlative: the smallest."},
+    {p:"A cheetah is [[]] than a horse.", hint:"(fast)", o:["faster","the fastest","fast"], a:0,
+     e:"A comparison with 'than' needs faster."},
+    {p:"The blue whale is [[]] animal in the group.", hint:"(big)", o:["bigger","the biggest","big"], a:1,
+     e:"A group of animals means superlative: the biggest."},
+    {p:"A turtle is [[]] than a rabbit.", hint:"(slow)", o:["slower","the slowest","slow"], a:0,
+     e:"Two animals are compared, so use slower + than."},
+    {p:"This is [[]] pencil in the box.", hint:"(short)", o:["shorter","the shortest","short"], a:1,
+     e:"'In the box' means a group of pencils, so use the shortest."},
+    {p:"My school bag is [[]] than your school bag.", hint:"(heavy)", o:["heavier","the heaviest","heavy"], a:0,
+     e:"Two bags are compared, so use heavier (y → i)."},
+    {p:"This is [[]] road in the town.", hint:"(long)", o:["longer","the longest","long"], a:1,
+     e:"'In the town' means one road out of many, so use the longest."}
+  ];
+
+  const EX4 = [
+    {s:"A cheetah is more fast than a horse.", a:"A cheetah is faster than a horse.",
+     e:"Do not use 'more' with short adjectives. Use -er: faster."},
+    {s:"An elephant is the bigger animal in the group.", a:"An elephant is the biggest animal in the group.",
+     e:"A group needs the superlative: the biggest."},
+    {s:"My bag is heavyer than your bag.", a:"My bag is heavier than your bag.",
+     e:"Heavy ends in -y. Change y to i: heavier."},
+    {s:"A mouse is more small than a cat.", a:"A mouse is smaller than a cat.",
+     e:"Short adjectives use -er, not 'more'. Small → smaller."},
+    {s:"This is the longest than road.", a:"This is the longest road.",
+     e:"Superlatives do not use 'than'. Write: the longest road."},
+    {s:"A turtle is the slowest than a rabbit.", a:"A turtle is slower than a rabbit.",
+     e:"Two animals are compared, so use slower + than, not 'the slowest'."}
+  ];
+
+  const EX5 = [
+    {vis:'<div class="pair"><span aria-hidden="true">🐘</span><span class="vs">vs</span><span aria-hidden="true">🐭</span></div><p class="caption">An elephant and a mouse</p>',
+     p:"The elephant is [[]] than the mouse.", hint:"(big)", a:"bigger", e:"Big → bigger."},
+    {vis:'<div class="pair"><span aria-hidden="true">🐆</span><span class="vs">vs</span><span aria-hidden="true">🐢</span></div><p class="caption">A cheetah and a turtle</p>',
+     p:"The cheetah is [[]] than the turtle.", hint:"(fast)", a:"faster", e:"Fast + -er = faster."},
+    {vis:'<div class="bars" aria-hidden="true"><div class="bar blue" style="width:95%">✏️ long pencil</div><div class="bar blue" style="width:55%">✏️ short pencil</div></div><p class="caption">A short pencil and a long pencil</p>',
+     p:"The long pencil is [[]] than the short pencil.", hint:"(long)", a:"longer", e:"Long → longer."},
+    {vis:'<div class="bars" aria-hidden="true"><div class="bar green" style="width:95%">🎒 big bag</div><div class="bar green" style="width:55%">🎒 small bag</div></div><p class="caption">A small bag and a big bag</p>',
+     p:"The big bag is [[]] than the small bag.", hint:"(big)", a:"bigger", e:"Big has a double g: bigger."}
+  ];
+
+  const EX6 = [
+    {p:"A snail is _____ than a cheetah.", o:["slow","slower","the slowest"], a:1,
+     e:"Two animals are compared, so use slower + than."},
+    {p:"A horse is _____ than a mouse.", o:["bigger","the biggest","big"], a:0,
+     e:"Two animals are compared. Big has a double g: bigger."},
+    {p:"The elephant is _____ animal in the zoo.", o:["heavier","the heaviest","heavy"], a:1,
+     e:"'In the zoo' means a group, so use the superlative. Heavy → heaviest (y → i)."},
+    {p:"This is _____ river in the country.", o:["longer","the longest","long"], a:1,
+     e:"'In the country' means one river out of many, so use the longest."},
+    {p:"Which sentence is correct?", o:["A mouse is more small than a cat.","A mouse is smaller than a cat.","A mouse is the smallest than a cat."], a:1,
+     e:"Use smaller with 'than' for two animals. Do not use 'more' or 'the' with 'than'."}
+  ];
+
+  const SECS = {
+    ex1:{title:"Exercise 1", t:7, run:()=>checkChoice(EX1,'e1'), box:'ex1-items'},
+    ex2:{title:"Exercise 2", t:7, run:()=>checkInline(EX2,'e2','text'), box:'ex2-items'},
+    ex3:{title:"Exercise 3", t:8, run:()=>checkInline(EX3,'e3','select'), box:'ex3-items'},
+    ex4:{title:"Exercise 4", t:6, run:()=>checkRewrite(), box:'ex4-items'},
+    ex5:{title:"Exercise 5", t:4, run:()=>checkInline(EX5,'e5','text'), box:'ex5-items'},
+    ex6:{title:"Exercise 6", t:5, run:()=>checkChoice(EX6,'e6'), box:'ex6-items'}
+  };
+  const TOTAL = Object.values(SECS).reduce((s,x)=>s+x.t,0);
+  let S = {};
+
+  /* ---------- RENDERING ---------- */
+  function renderChoice(boxId, items, p){
+    const box = $(boxId);
+    items.forEach((it,i)=>{
+      const q = document.createElement('div');
+      q.className='q'; q.id=`${p}-q${i}`;
+      const opts = it.o.map((o,j)=>
+        `<div class="opt"><input type="radio" name="${p}-${i}" id="${p}-${i}-${j}" value="${j}">
+         <label for="${p}-${i}-${j}">${o}</label></div>`).join('');
+      q.innerHTML = `<p class="qtext"><span class="num">${i+1}.</span> ${it.p}</p>
+        <fieldset class="opts"><legend class="sr-only">Question ${i+1}: ${it.p}</legend>${opts}</fieldset>
+        <div class="fb" id="${p}-fb-${i}" aria-live="polite"></div>`;
+      box.appendChild(q);
+    });
+  }
+
+  function renderInline(boxId, items, p, kind){
+    const box = $(boxId);
+    items.forEach((it,i)=>{
+      const q = document.createElement('div');
+      q.className='q'; q.id=`${p}-q${i}`;
+      let control;
+      if(kind==='select'){
+        control = `<select id="${p}-in${i}" aria-label="Answer for sentence ${i+1}">
+          <option value="">Choose…</option>
+          ${it.o.map((o,j)=>`<option value="${j}">${o}</option>`).join('')}</select>`;
+      } else {
+        control = `<input type="text" id="${p}-in${i}" aria-label="Answer for sentence ${i+1}" autocomplete="off" spellcheck="false">`;
+      }
+      const vis = it.vis ? `<div class="vis">${it.vis}</div>` : '';
+      const text = it.p.replace('[[]]', control);
+      q.innerHTML = `${vis}<p class="qtext"><span class="num">${i+1}.</span> ${text}
+        ${it.hint?` <span class="hint">${it.hint}</span>`:''}</p>
+        <div class="fb" id="${p}-fb-${i}" aria-live="polite"></div>`;
+      box.appendChild(q);
+    });
+  }
+
+  function renderRewrite(){
+    const box = $('ex4-items');
+    EX4.forEach((it,i)=>{
+      const q = document.createElement('div');
+      q.className='q'; q.id=`e4-q${i}`;
+      q.innerHTML = `<p class="qtext"><span class="num">${i+1}.</span> ${it.s}</p>
+        <label for="e4-in${i}"><strong>Write the correct sentence:</strong></label><br>
+        <input type="text" class="wide" id="e4-in${i}" autocomplete="off" spellcheck="false" style="margin-top:6px">
+        <div class="fb" id="e4-fb-${i}" aria-live="polite"></div>`;
+      box.appendChild(q);
+    });
+    const ml = $('ex4-model-list');
+    EX4.forEach(it=>{ const li=document.createElement('li'); li.textContent=it.a; ml.appendChild(li); });
+  }
+
+  /* ---------- CHECKING ---------- */
+  function setFb(fb, cls, txt){ fb.className = 'fb ' + cls; fb.textContent = txt; }
+
+  function checkChoice(items, p){
+    let c = 0;
+    items.forEach((it,i)=>{
+      const sel = document.querySelector(`input[name="${p}-${i}"]:checked`);
+      const card = $(`${p}-q${i}`), fb = $(`${p}-fb-${i}`);
+      card.classList.remove('right','wrong');
+      if(!sel){ card.classList.add('wrong'); setFb(fb,'miss','Please choose an answer first.'); return 0; }
+      if(+sel.value === it.a){
+        c++; card.classList.add('right'); setFb(fb,'ok','✓ Correct! ' + it.e);
+      } else {
+        card.classList.add('wrong');
+        setFb(fb,'bad',`✗ Not quite. The correct answer is "${it.o[it.a]}". ${it.e}`);
+      }
+    });
+    return c;
+  }
+
+  function checkInline(items, p, kind){
+    let c = 0;
+    items.forEach((it,i)=>{
+      const inp = $(`${p}-in${i}`), card = $(`${p}-q${i}`), fb = $(`${p}-fb-${i}`);
+      card.classList.remove('right','wrong');
+      const v = inp.value;
+      if(v.trim()===''){ card.classList.add('wrong'); setFb(fb,'miss','Please write or choose an answer first.'); return; }
+      const ok = kind==='select' ? v === String(it.a) : norm(v) === norm(it.a);
+      if(ok){
+        c++; card.classList.add('right'); setFb(fb,'ok','✓ Correct! ' + it.e);
+      } else {
+        card.classList.add('wrong');
+        const right = kind==='select' ? it.o[it.a] : it.a;
+        setFb(fb,'bad',`✗ Not quite. The correct answer is "${right}". ${it.e}`);
+      }
+    });
+    return c;
+  }
+
+  function checkRewrite(){
+    let c = 0;
+    EX4.forEach((it,i)=>{
+      const inp=$(`e4-in${i}`), card=$(`e4-q${i}`), fb=$(`e4-fb-${i}`);
+      card.classList.remove('right','wrong');
+      if(inp.value.trim()===''){ card.classList.add('wrong'); setFb(fb,'miss','Please write the corrected sentence first.'); return; }
+      if(norm(inp.value)===norm(it.a)){
+        c++; card.classList.add('right'); setFb(fb,'ok','✓ Correct! ' + it.e);
+      } else {
+        card.classList.add('wrong');
+        setFb(fb,'bad',`✗ Not quite. Try again. ${it.e} Check the model answers if you need help.`);
+      }
+    });
+    return c;
+  }
+
+  /* ---------- SECTION / RESULTS ---------- */
+  function clearBox(boxId){
+    const box = $(boxId);
+    box.querySelectorAll('input,select').forEach(el=>{
+      if(el.type==='radio'||el.type==='checkbox') el.checked=false; else el.value='';
+    });
+    box.querySelectorAll('.q').forEach(q=>q.classList.remove('right','wrong'));
+    box.querySelectorAll('.fb').forEach(f=>{ f.className='fb'; f.textContent=''; });
+  }
+
+  function clearSec(k){
+    clearBox(SECS[k].box);
+    $('score-'+k).textContent='';
+    delete S[k];
+    if(k==='ex5') $('self-check').checked=false;
+    if(k==='ex4') $('ex4-model').hidden=true;
+    updateResults();
+  }
+
+  function updateResults(){
+    let c=0, rows='', checkedAll=true;
+    Object.keys(SECS).forEach(k=>{
+      const s=SECS[k];
+      if(S[k]){ c+=S[k].c; rows+=`<li>${s.title}: ${S[k].c} / ${s.t} correct</li>`; }
+      else { checkedAll=false; rows+=`<li>${s.title}: not checked yet</li>`; }
+    });
+    rows += `<li>Self-check (Exercise 5): ${$('self-check').checked ? 'I can compare two objects using -er + than ✓' : 'not ticked yet'}</li>`;
+    const pct = Math.round(c/TOTAL*100);
+    $('final-score').textContent = `${c} / ${TOTAL} (${pct}%)`;
+    $('final-rows').innerHTML = rows;
+    let msg;
+    if(Object.keys(S).length===0) msg = 'Check the answers in each part to see your results.';
+    else if(pct>=90) msg = 'Excellent! You can use comparatives and superlatives very well.';
+    else if(pct>=70) msg = 'Good job! Review the spelling rules and try again.';
+    else msg = 'Keep practising! Check the grammar reference and try again.';
+    if(Object.keys(S).length>0 && !checkedAll) msg += ' (Check all parts to count everything.)';
+    $('final-msg').textContent = msg;
+  }
+
+  function runCheck(k){
+    const c = SECS[k].run();
+    S[k] = {c};
+    const pct = Math.round(c/SECS[k].t*100);
+    $('score-'+k).textContent = `Score: ${c} / ${SECS[k].t} correct (${pct}%)`;
+    updateResults();
+  }
+
+  /* ---------- EVENTS ---------- */
+  document.addEventListener('click', e=>{
+    const b = e.target.closest('button'); if(!b) return;
+    if(b.dataset.check) runCheck(b.dataset.check);
+    else if(b.dataset.try) clearSec(b.dataset.try);
+    else if(b.dataset.model){
+      const m=$('ex4-model'); m.hidden=!m.hidden;
+      b.setAttribute('aria-expanded', String(!m.hidden));
+    }
+    else if(b.id==='reset-all'){
+      Object.keys(SECS).forEach(k=>{ clearBox(SECS[k].box); $('score-'+k).textContent=''; });
+      clearBox('ex4-items');
+      $('self-check').checked=false;
+      $('ex4-model').hidden=true;
+      S={};
+      updateResults();
+      window.scrollTo({top:0,behavior:'smooth'});
+    }
+  });
+
+  document.addEventListener('change', e=>{
+    if(e.target.id==='self-check') updateResults();
+  });
+
+  document.addEventListener('keydown', e=>{
+    if(e.key==='Enter' && e.target.tagName==='INPUT' && e.target.type==='text'){
+      const sec = e.target.closest('section');
+      const btn = sec && sec.querySelector('[data-check]');
+      if(btn){ e.preventDefault(); btn.click(); }
+    }
+  });
+
+  /* ---------- INIT ---------- */
+  renderChoice('ex1-items', EX1, 'e1');
+  renderInline('ex2-items', EX2, 'e2', 'text');
+  renderInline('ex3-items', EX3, 'e3', 'select');
+  renderRewrite();
+  renderInline('ex5-items', EX5, 'e5', 'text');
+  renderChoice('ex6-items', EX6, 'e6');
+  $('ex4-model').hidden = true;
+  updateResults();
+})();
+</script>
+</body>
+</html>
